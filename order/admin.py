@@ -1,44 +1,45 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+
 from .models import Order
 from .utils import get_package_info, get_freight_info
+from freight.serializers import FreightSerializer
 
-# from django.contrib.contenttypes.models import ContentType
 
-
-@admin.action(description="Calculate freight")
+@admin.action(description="Calculate item freight")
 def freight_calculator(self, request, queryset):
     order_selected = queryset.values()
-    package_id = 0
 
     for item in order_selected:
-        print(f"before: {item}")
-
+        # send the selected package to filter the needed info and return a new dict.
         package_info = get_package_info(item)
+
+        # stores the selected order id
         package_id = package_info[1]
-        print(f"after: {package_info}")
 
+        # stores filtered and quoted values
         quoted_freight = get_freight_info(package_info[0])
-        print(f"Quoted {quoted_freight}")
 
-        # pegar o valor de quoted_freight e armazenar na model de freight
+        # return example from quoted_freight:
+        """ quoted_freight_example = {
+            "carrier": "Jean shipments",
+            "delivery_time": "2023-10-06",
+            "delivery_cost": "100.0",
+            "external_freight_id": 532,
+        } """
+
+        # add the package id before store in freight database
+        quoted_freight.update(package_id)
+
+        # Validates and save the package
+        if len(quoted_freight) == 5:
+            freight_serializer = FreightSerializer(data=quoted_freight)
+            freight_serializer.is_valid(raise_exception=True)
+            freight_serializer.save()
+            self.message_user(request, "Cotação realizada e salva com sucesso!")
+        else:
+            self.message_user(request, "Houve um erro com o pedido relizado.", level=messages.ERROR)
 
 
-"""
-    adicionando mensagem ao usuario após cotação.
-self.message_user(
-        request,
-        ngettext(
-            "%d story was successfully marked as published.",
-            "%d stories were successfully marked as published.",
-            updated,
-        )
-        % updated,
-        messages.SUCCESS,
-    )
- """
-
-
-# admin.site.register(Order)
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
