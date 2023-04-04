@@ -6,7 +6,7 @@ url = "https://sandbox.melhorenvio.com.br/api/v2/me/shipment/calculate"
 
 
 def get_package_info(order):
-    measures_needed = ["weight", "height", "width", "length"]
+    fields_needed = ["weight", "height", "width", "length"]
     freight_to_calculate = {}
     options = {}
     package = {}
@@ -24,10 +24,10 @@ def get_package_info(order):
             send["to"] = {"postal_code": value}
 
         elif item == "id":
-            order_id["id"] = value
+            order_id["order"] = value
 
     # loop to get package measures and save to the dict
-    for item in measures_needed:
+    for item in fields_needed:
         if item in order:
             value = order.pop(item)
             try:
@@ -49,6 +49,16 @@ def get_package_info(order):
 
 
 def get_freight_info(order):
+    body = {}
+    total_fields = 0
+    fields_needed = [
+        "carrier",
+        "delivery_time",
+        "delivery_cost",
+        "external_freight_id",
+    ]
+
+    # headers pattern
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
@@ -56,15 +66,18 @@ def get_freight_info(order):
         "User-Agent": "Freigth app (wellerypro@outlook.com)",
     }
 
-    payload = json.dumps(get_package_info(order))
+    payload = json.dumps(get_package_info(body))
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
-    print(response.text)
+    # looping to ensure there are no extra fields beyond what is needed:
+    for item in fields_needed:
+        if item in response.text:
+            value = order.pop(item)
+            body[item] = value
+            total_fields = total_fields + 1
 
-
-"""
-print(get_freight_info)
-req = requests.get()
-melhor_envio = ...
-"""
+    if total_fields == 4:
+        return body
+    else:
+        return "error"
