@@ -41,7 +41,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APP = ["rest_framework"]
 
-MY_APPS = ["order"]
+MY_APPS = ["freight", "order"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APP + MY_APPS
 
