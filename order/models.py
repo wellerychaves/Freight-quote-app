@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Order(models.Model):
-    number = models.BigIntegerField(null=False)
+    number = models.BigIntegerField(editable=False, null=False, default=0)
     amount = models.IntegerField(null=False)
     weight = models.IntegerField(null=False)
     width = models.DecimalField(max_digits=5, decimal_places=1, null=False)
