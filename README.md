@@ -30,6 +30,14 @@ source venv/bin/activate
 .\venv\Scripts\activate.ps1
 ```
 
+## Instalando dependencias
+
+Instale as dependencias do projeto com o seguinte comando:
+```
+pip install -r requirements.txt
+```
+
+
 ### Migrations:
 
 Primeiramente crie as migrations executando:
