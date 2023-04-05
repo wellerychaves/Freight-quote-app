@@ -57,7 +57,11 @@ python manage.py runserver
 ## 2. Utilizando a API
 
 Após ter iniciado a API vá ao seu navegador e acesse localhost:8000/admin.
+
 Realize o login utilizando as credenciais que você criou após criar um usuário admin.
+
 Em seguida clique em **order** para criar um novo pedido e preencha todos os campos.
+
 Após cadastrar os pedidos, selecione quais você gostaria de cotar e em seguida, acima dos produtos selecione a action "Calculate item freight" e clique em go.
+
 Após isso a API irá enviar os produtos selecionados para uma API externa e retornar com uma cotação, todas as cotações realizadas e suas informações poderão ser vistas em "Freight" ainda na pagina de admin.
